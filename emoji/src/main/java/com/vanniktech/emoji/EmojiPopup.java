@@ -174,11 +174,22 @@ import static com.vanniktech.emoji.Utils.checkNotNull;
     rootView.addOnAttachStateChangeListener(onAttachStateChangeListener);
   }
 
+  View.OnApplyWindowInsetsListener windowInsetsListener = null;
+
+  void setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener listener) {
+    this.windowInsetsListener = listener;
+  }
+
+  public void onApplyWindowInsets(View v, WindowInsets insets) {
+    if (this.windowInsetsListener != null) this.windowInsetsListener.onApplyWindowInsets(v, insets);
+  }
+
   void start() {
-    context.getWindow().getDecorView().setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+    this.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
       int previousOffset;
 
-      @Override public WindowInsets onApplyWindowInsets(final View v, final WindowInsets insets) {
+      @Override
+      public WindowInsets onApplyWindowInsets(final View v, final WindowInsets insets) {
         final int offset;
 
         if (insets.getSystemWindowInsetBottom() < insets.getStableInsetBottom()) {
@@ -204,8 +215,7 @@ import static com.vanniktech.emoji.Utils.checkNotNull;
 
   void stop() {
     dismiss();
-
-    context.getWindow().getDecorView().setOnApplyWindowInsetsListener(null);
+    this.setOnApplyWindowInsetsListener(null);
   }
 
   @SuppressWarnings("PMD.CyclomaticComplexity") void updateKeyboardStateOpened(final int keyboardHeight) {
